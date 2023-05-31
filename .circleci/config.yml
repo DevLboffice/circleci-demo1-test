@@ -1,20 +1,23 @@
 version: 2.1
 
+jobs:
+    build-image: 
+      environment: 
+        IMAGE_NAME: devtest/image-on-cci
+      docker:
+        - image: circleci/buildpack-deps:stretch
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+            name: Build Docker Image
+            command: docker build -t $IMAGE_NAME:latest        
+
 workflows:
   test-deploy:
     jobs: 
-      - test
-
-jobs:
-    test: 
-      docker: 
-        - image: cimg/node:14.13.0
-      steps:
-        - checkout
-        - run:
-            name: Install dependencies
-            command: npm install
-        - run:
-            name: Run Tests 
-            command: "echo test only"
+      - build-image:
+          filters:
+            branches:
+              only: main
         

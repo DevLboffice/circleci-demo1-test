@@ -33,7 +33,7 @@ jobs:
           name: set branch variable
           command: |
             export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')
-            "echo $CIRCLE_BRANCH" 
+            "echo $BRANCH" 
 
   publish-image:
       executor: docker-publisher

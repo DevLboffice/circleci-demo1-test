@@ -70,7 +70,7 @@ workflows:
       - build-image:
           filters:
             branches:
-              only: circleci-project-setup
+              only: circleTest
       - publish-image:
           requires:
             - build-image

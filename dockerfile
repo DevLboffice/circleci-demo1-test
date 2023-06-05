@@ -42,7 +42,7 @@ RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
 WORKDIR /var/www/
 
 # Copy project into image.
-COPY src/ /var/www/
+COPY src/example-app /var/www/
 
 COPY nginx-default.conf /etc/nginx/sites-enabled/default
 COPY nginx-main.conf /etc/nginx/nginx.conf

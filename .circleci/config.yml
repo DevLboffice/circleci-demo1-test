@@ -32,7 +32,7 @@ jobs:
       - run:
           name: set branch variable
           command: |
-            "echo BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')"
+            "echo BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')" >> version.txt
             
 
   publish-image:

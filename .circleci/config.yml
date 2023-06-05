@@ -6,7 +6,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment: 
-      IMAGE_NAME: $imaget #need to check if the image name is properly set
+      IMAGE_NAME: circleci/test 
     docker:
       - image: cimg/base:stable
 
@@ -18,7 +18,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build Docker Image
-          command: docker build -t $IMAGE_NAME:latest . #might need to be implemented in the build-octopus-info job
+          command: docker build -t $IMAGE_NAME:latest . 
       - run:
           name: Save Image as tar archive to publish to Docker Hub
           command: docker save -o image.tar $IMAGE_NAME
@@ -33,7 +33,7 @@ jobs:
           name: set branch variable
           command: |
             export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')
-            "echo CIRCLE_BRANCH" 
+            "echo $CIRCLE_BRANCH" 
 
   publish-image:
       executor: docker-publisher

@@ -1,23 +1,85 @@
 version: 2.1
 
+# orbs:
+#   octopus-cli: octopusdeploylabs/octopus-cli@0.0.3
+  
+executors:
+  docker-publisher:
+    environment: 
+      IMAGE_NAME: $IMAGE #need to check if the image name is properly set
+    docker:
+      - image: cimg/base:stable
+
 jobs:
-    build-image: 
-      environment: 
-        IMAGE_NAME: devtest/image-on-cci
-      docker:
-        - image: cimg/base:stable
+  build-image: 
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: docker build -t $IMAGE_NAME:latest . #might need to be implemented in the build-octopus-info job
+      - run:
+          name: Save Image as tar archive to publish to Docker Hub
+          command: docker save -o image.tar $IMAGE_NAME
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar      
+  publish-image:
+      executor: docker-publisher
       steps:
-        - checkout
+        - attach_workspace:
+            at: /tmp/workspace
         - setup_remote_docker
         - run:
-            name: Build Docker Image
-            command: docker build -t $IMAGE_NAME:latest .        
-
+            name: Load archived docker image
+            command: docker load -i /tmp/workspace/image.tar
+        - run:
+            name: Publish Docker Imgae to Docker Hub
+            command: |
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
+              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+              docker push $IMAGE_NAME:latest
+              docker push $IMAGE_NAME:$IMAGE_TAG
+  # build-octopus-info:
+  #   executor: 
+  #     name: octopus-cli/default
+  #   steps: 
+  #     - octopus-cli/install-tools
+  #     - octopus-cli/build-information:
+  #         api_key: $OCTOPUS_API_KEY
+  #         package_id: $IMAGE  #check if the package requiures exact image name
+  #         server: $OCTOPUS_SERVER_URL
+  #         version: ${bamboo.inject.ver}-${CIRCLE_BRANCH}.${CIRCLE_BUILD_NUM}
+  # build-octopus-release:
+  #   executor: 
+  #     name: octopus-cli/default
+  #   steps:
+  #     - octopus-cli/install-tools
+  #     - octopus-cli/create-release:
+  #         api_key: $OCTOPUS_API_KEY
+  #         project: $OCTOPUS_PROJECT
+  #         release_number: ${bamboo.inject.ver}-${CIRCLE_BRANCH}.${CIRCLE_BUILD_NUM}
+  #         channel: #chennle name to be released
+  #         server: $OCTOPUS_SERVER_URL          
 workflows:
   test-deploy:
     jobs: 
       - build-image:
           filters:
             branches:
-              only: main
+              only: circleci-project-setup
+      - publish-image:
+          requires:
+            - build-image
+      # - build-octopus-info:
+      #     requires:
+      #       - publish-image
+      # - build-octopus-release:
+      #     requires:
+      #       - publish-image
+      
+          
         

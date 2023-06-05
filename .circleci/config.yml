@@ -32,7 +32,7 @@ jobs:
       - run:
           name: set branch variable
           command: |
-            "echo BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')" >> version.txt
+            echo "BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')" >> version.txt
             
 
   publish-image:
@@ -47,7 +47,7 @@ jobs:
         - run:
             name: Publish Docker Imgae to Docker Hub
             command: |
-              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password "$DOCKERHUB_PASS"
               IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
               docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
               docker push $IMAGE_NAME:latest

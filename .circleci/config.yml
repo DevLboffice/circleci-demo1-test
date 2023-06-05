@@ -25,7 +25,16 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - ./image.tar      
+            - ./image.tar    
+  define-var:
+    executor: docker-publisher
+    steps:
+      - run:
+          name: set branch variable
+          command: |
+            branch=`echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]'`
+            echo branch 
+
   publish-image:
       executor: docker-publisher
       steps:
@@ -71,6 +80,7 @@ workflows:
           filters:
             branches:
               only: circleTest
+      - define-var
       - publish-image:
           requires:
             - build-image

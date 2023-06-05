@@ -49,11 +49,8 @@ jobs:
         - run:
             name: Publish Docker Imgae to Docker Hub
             command: |
-              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password "$DOCKERHUB_PASS"
-              IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
-              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
               docker push $IMAGE_NAME:latest
-              docker push $IMAGE_NAME:$IMAGE_TAG
   # build-octopus-info:
   #   executor: 
   #     name: octopus-cli/default

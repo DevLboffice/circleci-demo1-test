@@ -68,7 +68,7 @@
                                     </svg>
                                 </div>
 
-                                <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">lorem</h2>
+                                <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">lorem ed1</h2>
 
                                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed magna est, dictum ut ullamcorper non, bibendum id justo. Nunc finibus varius nisl a fermentum. Integer eros enim, fringilla commodo sollicitudin ut, ullamcorper sit amet libero. Integer vel dignissim massa. Maecenas sem libero, tempor sodales vestibulum at, ultrices vel tellus. 

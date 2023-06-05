@@ -6,7 +6,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment: 
-      IMAGE_NAME: $IMAGE #need to check if the image name is properly set
+      IMAGE_NAME: $imaget #need to check if the image name is properly set
     docker:
       - image: cimg/base:stable
 
@@ -33,7 +33,7 @@ jobs:
           name: set branch variable
           command: |
             export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')
-            echo CIRCLE_BRANCH 
+            "echo CIRCLE_BRANCH" 
 
   publish-image:
       executor: docker-publisher

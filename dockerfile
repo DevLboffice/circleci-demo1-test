@@ -47,17 +47,6 @@ COPY src/ /var/www/
 COPY nginx-default.conf /etc/nginx/sites-enabled/default
 COPY nginx-main.conf /etc/nginx/nginx.conf
 
-# Migrate laravel error log.
-RUN mkdir /var/log/laravel && touch /var/log/laravel/laravel.log && touch /var/log/laravel/applications.log
-RUN ln -s /var/log/laravel/laravel.log /var/www/storage/logs/laravel.log
-RUN ln -s /var/log/laravel/applications.log /var/www/storage/logs/applications.log
-
-#RUN chmod -R 777 storage/logs/laravel.log
-# ownership =>  www-data:adm for logging
-
-RUN chown -R 33:4 /var/log/laravel/
-RUN chown -R 33:33 storage/logs/laravel.log
-
 # the bash script isn't executed but can be useful for debugging
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh

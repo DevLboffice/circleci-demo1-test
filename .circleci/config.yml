@@ -2,11 +2,13 @@ version: 2.1
 
 # orbs:
 #   octopus-cli: octopusdeploylabs/octopus-cli@0.0.3
+
+#IMAGE_NAME="your-dockerhub-username/your-image-name"  [your-dockerhub-username: This should be replaced with your Docker Hub username. ] [your-image-name : it represents the repository name within your Docker Hub account where the image will be pushed.] 
   
 executors:
   docker-publisher:
     environment: 
-      IMAGE_NAME: circleci/test 
+      IMAGE_NAME: devulb/circleci
     docker:
       - image: cimg/base:stable
 

@@ -43,7 +43,7 @@ jobs:
               echo "Using tag: $CIRCLE_TAG"
               echo "ver=$CIRCLE_TAG" >> var.tmp            
             elif [ "APP_VER" != "empty" ]; then
-              echo "Using app_ver: $YOUR_APP_VER_VARIABLE"
+              echo "Using app_ver: $APP_VER_"
               echo "ver=$APP_VER" >> var.tmp
             else
               echo "Tag and app_ver are empty, using ver.txt"
@@ -54,11 +54,11 @@ jobs:
           name: determine release channel
           command: |             
             if [ "$BRANCH" = "dev" ]; then
-              echo "release=$YOUR_OCTOPUS_DEV_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_DEV_CHANNEL" >> var.tmp
             elif [ "$BRANCH" = "main" ]; then
-              echo "release=$YOUR_OCTOPUS_STD_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_STD_CHANNEL" >> var.tmp
             else
-              echo "release=$YOUR_OCTOPUS_FEATURE_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_FEATURE_CHANNEL" >> var.tmp
             fi
       - run:
           name: Debug output

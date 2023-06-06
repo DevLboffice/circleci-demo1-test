@@ -8,7 +8,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment: 
-      IMAGE_NAME: devulb/circleci
+      IMAGE_NAME: $image
     docker:
       - image: cimg/base:stable
 

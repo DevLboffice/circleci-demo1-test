@@ -36,14 +36,15 @@ jobs:
           command: |
             rm -f var.tmp
             export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]') 
+            echo "branch=$BRANCH" >> var.tmp
       - run:
           name: get the version and tag
           command: |
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
               echo "ver=$CIRCLE_TAG" >> var.tmp            
-            elif [ "APP_VER" != "empty" ]; then
-              echo "Using app_ver: $APP_VER_"
+            elif [ -n "$APP_VER" != "empty" ]; then
+              echo "Using app_ver: $APP_VER"
               echo "ver=$APP_VER" >> var.tmp
             else
               echo "Tag and app_ver are empty, using ver.txt"
@@ -62,9 +63,7 @@ jobs:
             fi
       - run:
           name: Debug output
-          command: |            
-            echo "branch=$BRANCH" >> var.tmp
-            cat var.tmp
+          command: cat var.tmp
       
   # publish-image:
   #     executor: docker-publisher

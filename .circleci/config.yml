@@ -49,7 +49,7 @@ jobs:
               echo "ver=$APP_VER" >> var.tmp
             else
               echo "Tag and app_ver are empty, using ver.txt"
-              ver=$(cat ver.txt)
+              ver=$(cat ./ver.txt)
               echo "ver=$ver" >> var.tmp
             fi
       - run:

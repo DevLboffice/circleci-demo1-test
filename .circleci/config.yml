@@ -40,8 +40,13 @@ jobs:
       - run:
           name: get the version and tag
           command: |
+            pwd
+            ls
             find .. -name ver.txt
+            ls ..
             find ../../ -name ver.txt
+            ls ../../            
+
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
               echo "ver=$CIRCLE_TAG" >> var.tmp            
@@ -50,7 +55,7 @@ jobs:
               echo "ver=$APP_VER" >> var.tmp
             else
               echo "Tag and app_ver are empty, using ver.txt"
-              ver=$(cat ./ver.txt)
+              ver=$(cat ././ver.txt)
               echo "ver=$ver" >> var.tmp
             fi
       - run:

@@ -41,6 +41,7 @@ jobs:
           name: get the version and tag
           command: |
             pwd
+            ls
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
               echo "ver=$CIRCLE_TAG" >> var.tmp            

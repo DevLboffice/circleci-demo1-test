@@ -13,10 +13,10 @@ executors:
       - image: cimg/base:stable
 
 jobs:
-  # build-image: 
-  #   executor: docker-publisher
-  #   steps:
-  #     - checkout
+  build-image: 
+     executor: docker-publisher
+     steps:
+       - checkout
   #     - setup_remote_docker
   #     - run:
   #         name: Build Docker Image
@@ -30,7 +30,7 @@ jobs:
   #           - ./image.tar    
   define-var:
     executor: docker-publisher
-    steps:
+    steps:               
       - run:
           name: set branch variable
           command: |
@@ -113,7 +113,7 @@ jobs:
 workflows:
   test-deploy:
     jobs: 
-      # - build-image:
+      - build-image
       #     filters:
       #       branches:
       #         only: circleTest

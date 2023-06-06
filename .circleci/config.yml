@@ -17,21 +17,6 @@ jobs:
     executor: docker-publisher
     steps:
       - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker Image
-          command: docker build -t $IMAGE_NAME:latest . 
-      - run:
-          name: Save Image as tar archive to publish to Docker Hub
-          command: docker save -o image.tar $IMAGE_NAME
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar    
-  define-var:
-    executor: docker-publisher
-    steps:
-      - checkout          
       - run:
           name: set branch variable
           command: |
@@ -70,13 +55,72 @@ jobs:
             vlnum="$ver-$branch.${CIRCLE_BUILD_NUM}"
             echo "$vlnum"
             echo "vrnum=$vlnum" >> var.tmp
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: docker build -t $IMAGE_NAME:latest . 
+      - run:
+          name: Save Image as tar archive to publish to Docker Hub
+          command: docker save -o image.tar $IMAGE_NAME
       - persist_to_workspace:
           root: .
           paths:
-            - ./var.tmp          
+            - ./image.tar
+            - ./var.tmp
       - run:
           name: Debug output
-          command: cat var.tmp          
+          command: cat var.tmp 
+
+  #INDEPENDENT JOB TO DEFINE THE NECESSARY VARIABLE: used for debugging only
+  # define-var:
+  #   executor: docker-publisher
+  #   steps:
+  #     - checkout          
+  #     - run:
+  #         name: set branch variable
+  #         command: |
+  #           rm -f var.tmp
+  #           export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]') 
+  #           echo "branch=$BRANCH" >> var.tmp
+  #     - run:
+  #         name: get the version and tag
+  #         command: |                      
+  #           if [ -n "$CIRCLE_TAG" ]; then
+  #             echo "Using tag: $CIRCLE_TAG"
+  #             echo "ver=$CIRCLE_TAG" >> var.tmp                           
+  #           elif [ -n "$APP_VER" ] && [ "$APP_VER" != "empty" ]; then
+  #             echo "Using app_ver: $APP_VER"
+  #             echo "ver=$APP_VER" >> var.tmp                            
+  #           else
+  #             echo "Tag and app_ver are empty, using ver.txt"
+  #             ver=$(cat ver.txt)
+  #             echo "ver=$ver" >> var.tmp              
+  #           fi            
+  #     - run:
+  #         name: determine release channel
+  #         command: |             
+  #           if [ "$BRANCH" = "dev" ]; then
+  #             echo "release=$OCTOPUS_DEV_CHANNEL" >> var.tmp              
+  #           elif [ "$BRANCH" = "main" ]; then
+  #             echo "release=$OCTOPUS_STD_CHANNEL" >> var.tmp              
+  #           else
+  #             echo "release=$OCTOPUS_FEATURE_CHANNEL" >> var.tmp              
+  #           fi
+  #     - run:
+  #         name: version release number
+  #         command: |
+  #           ver=$(grep -oP 'ver=\K.*' var.tmp)
+  #           branch=$(grep -oP 'branch=\K.*' var.tmp)
+  #           vlnum="$ver-$branch.${CIRCLE_BUILD_NUM}"
+  #           echo "$vlnum"
+  #           echo "vrnum=$vlnum" >> var.tmp
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - ./var.tmp          
+  #     - run:
+  #         name: Debug output
+  #         command: cat var.tmp          
       
   publish-image:
       executor: docker-publisher
@@ -124,8 +168,7 @@ workflows:
       - build-image:
           filters:
             branches:
-              only: circleTest
-      - define-var
+              only: circleTest  
       - publish-image:
           requires:
             - build-image

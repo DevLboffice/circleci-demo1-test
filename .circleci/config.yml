@@ -69,6 +69,7 @@ jobs:
           name: version release number
           command: |
             vlnum=$ver-$BRANCH.${CIRCLE_BUILD_NUM}
+            echo "vrnum=$vlnum" >> var.tmp
       - persist_to_workspace:
           root: .
           paths:

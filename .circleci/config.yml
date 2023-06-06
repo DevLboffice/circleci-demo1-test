@@ -44,11 +44,11 @@ jobs:
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
               echo "ver=$CIRCLE_TAG" >> var.tmp
-              export ver=$ver            
+              export ver=$CIRCLE_TAG           
             elif [ -n "$APP_VER" ] && [ "$APP_VER" != "empty" ]; then
               echo "Using app_ver: $APP_VER"
               echo "ver=$APP_VER" >> var.tmp
-              export ver=$ver
+              export ver=$APP_VER
             else
               echo "Tag and app_ver are empty, using ver.txt"
               ver=$(cat ver.txt)

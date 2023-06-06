@@ -13,47 +13,76 @@ executors:
       - image: cimg/base:stable
 
 jobs:
-  build-image: 
-    executor: docker-publisher
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker Image
-          command: docker build -t $IMAGE_NAME:latest . 
-      - run:
-          name: Save Image as tar archive to publish to Docker Hub
-          command: docker save -o image.tar $IMAGE_NAME
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar    
+  # build-image: 
+  #   executor: docker-publisher
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Build Docker Image
+  #         command: docker build -t $IMAGE_NAME:latest . 
+  #     - run:
+  #         name: Save Image as tar archive to publish to Docker Hub
+  #         command: docker save -o image.tar $IMAGE_NAME
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - ./image.tar    
   define-var:
     executor: docker-publisher
     steps:
       - run:
           name: set branch variable
           command: |
-            echo "BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]')" >> version.txt
-            
-
-  publish-image:
-      executor: docker-publisher
-      steps:
-        - attach_workspace:
-            at: /tmp/workspace
-        - setup_remote_docker
-        - run:
-            name: Load archived docker image
-            command: docker load -i /tmp/workspace/image.tar
-        - run:
-            name: Publish Docker Imgae to Docker Hub
-            command: |
-              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"
-              IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
-              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
-              docker push $IMAGE_NAME:latest
-              docker push $IMAGE_NAME:$IMAGE_TAG
+            rm -f var.tmp
+            export BRANCH=$(echo $CIRCLE_BRANCH | tr '[:upper:]' '[:lower:]') 
+      - run:
+          name: get the version and tag
+          command: |
+            if [ -n "$CIRCLE_TAG" ]; then
+              echo "Using tag: $CIRCLE_TAG"
+              echo "ver=$CIRCLE_TAG" >> var.tmp            
+            elif [ "APP_VER" != "empty" ]; then
+              echo "Using app_ver: $YOUR_APP_VER_VARIABLE"
+              echo "ver=$APP_VER" >> var.tmp
+            else
+              echo "Tag and app_ver are empty, using ver.txt"
+              ver=$(cat ver.txt)
+              echo "ver=$ver" >> var.tmp
+            fi
+      - run:
+          name: determine release channel
+          command: |             
+            if [ "$BRANCH" = "dev" ]; then
+              echo "release=$YOUR_OCTOPUS_DEV_CHANNEL" >> var.tmp
+            elif [ "$BRANCH" = "main" ]; then
+              echo "release=$YOUR_OCTOPUS_STD_CHANNEL" >> var.tmp
+            else
+              echo "release=$YOUR_OCTOPUS_FEATURE_CHANNEL" >> var.tmp
+            fi
+      - run:
+          name: Debug output
+          command: |            
+            echo "branch=$BRANCH" >> var.tmp
+            cat var.tmp
+      
+  # publish-image:
+  #     executor: docker-publisher
+  #     steps:
+  #       - attach_workspace:
+  #           at: /tmp/workspace
+  #       - setup_remote_docker
+  #       - run:
+  #           name: Load archived docker image
+  #           command: docker load -i /tmp/workspace/image.tar
+  #       - run:
+  #           name: Publish Docker Imgae to Docker Hub
+  #           command: |
+  #             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"
+  #             IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
+  #             docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+  #             #docker push $IMAGE_NAME:latest
+  #             docker push $IMAGE_NAME:$IMAGE_TAG
   # build-octopus-info:
   #   executor: 
   #     name: octopus-cli/default
@@ -78,14 +107,14 @@ jobs:
 workflows:
   test-deploy:
     jobs: 
-      - build-image:
-          filters:
-            branches:
-              only: circleTest
+      # - build-image:
+      #     filters:
+      #       branches:
+      #         only: circleTest
       - define-var
-      - publish-image:
-          requires:
-            - build-image
+      # - publish-image:
+      #     requires:
+      #       - build-image
       # - build-octopus-info:
       #     requires:
       #       - publish-image

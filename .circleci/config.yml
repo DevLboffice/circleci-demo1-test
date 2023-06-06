@@ -43,18 +43,16 @@ jobs:
           command: |                      
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
-              echo "ver=$CIRCLE_TAG" >> var.tmp
-              export ver=$CIRCLE_TAG           
+              echo "ver=$CIRCLE_TAG" >> var.tmp              
             elif [ -n "$APP_VER" ] && [ "$APP_VER" != "empty" ]; then
               echo "Using app_ver: $APP_VER"
-              echo "ver=$APP_VER" >> var.tmp
-              export ver=$APP_VER
+              echo "ver=$APP_VER" >> var.tmp              
             else
               echo "Tag and app_ver are empty, using ver.txt"
               ver=$(cat ver.txt)
-              echo "ver=$ver" >> var.tmp
-              export ver=$ver
+              echo "ver=$ver" >> var.tmp              
             fi
+            export $ver
       - run:
           name: determine release channel
           command: |             
@@ -71,7 +69,7 @@ jobs:
             vlnum="$ver-$BRANCH.${CIRCLE_BUILD_NUM}"
             echo "$ver"
             echo "$BRANCH"
-            echo "vlnum"
+            echo "$vlnum"
             echo "vrnum=$vlnum" >> var.tmp
       - persist_to_workspace:
           root: .

@@ -127,6 +127,9 @@ jobs:
       steps:
         - attach_workspace:
             at: /tmp/workspace
+        - run:
+            name: Verify files are in attach_workspace
+            command: ls -al /tmp/workspace
         - setup_remote_docker
         - run:
             name: Load archived docker image
@@ -136,7 +139,7 @@ jobs:
             command: |
               echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"
               #IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
-              IMAGE_TAG=$(cat var.tmp | grep "^vrnum=" | cut -d "=" -f2)
+              IMAGE_TAG=$(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
               echo $IMAGE_TAG
               docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
               #docker push $IMAGE_NAME:latest

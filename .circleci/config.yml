@@ -52,7 +52,7 @@ jobs:
               ver=$(cat ver.txt)
               echo "ver=$ver" >> var.tmp              
             fi
-            export $ver
+            export v=$ver
       - run:
           name: determine release channel
           command: |             
@@ -66,8 +66,8 @@ jobs:
       - run:
           name: version release number
           command: |
-            vlnum="$ver-$BRANCH.${CIRCLE_BUILD_NUM}"
-            echo "$ver"
+            vlnum="$v-$BRANCH.${CIRCLE_BUILD_NUM}"
+            echo "$v"
             echo "$BRANCH"
             echo "$vlnum"
             echo "vrnum=$vlnum" >> var.tmp

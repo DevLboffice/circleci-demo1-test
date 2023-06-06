@@ -40,38 +40,42 @@ jobs:
             echo "branch=$BRANCH" >> var.tmp
       - run:
           name: get the version and tag
-          command: |
-            pwd
-            ls
-            find .. -name ver.txt
-            ls ..
-            find ../../ -name ver.txt
-            ls ../../            
-
+          command: |                      
             if [ -n "$CIRCLE_TAG" ]; then
               echo "Using tag: $CIRCLE_TAG"
-              echo "ver=$CIRCLE_TAG" >> var.tmp            
+              echo "ver=$CIRCLE_TAG" >> var.tmp
+              export ver=$ver            
             elif [ -n "$APP_VER" ] && [ "$APP_VER" != "empty" ]; then
               echo "Using app_ver: $APP_VER"
               echo "ver=$APP_VER" >> var.tmp
+              export ver=$ver
             else
               echo "Tag and app_ver are empty, using ver.txt"
-              ver=$(cat ././ver.txt)
+              ver=$(cat ver.txt)
               echo "ver=$ver" >> var.tmp
+              export ver=$ver
             fi
       - run:
           name: determine release channel
           command: |             
             if [ "$BRANCH" = "dev" ]; then
-              echo "release=$OCTOPUS_DEV_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_DEV_CHANNEL" >> var.tmp              
             elif [ "$BRANCH" = "main" ]; then
-              echo "release=$OCTOPUS_STD_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_STD_CHANNEL" >> var.tmp              
             else
-              echo "release=$OCTOPUS_FEATURE_CHANNEL" >> var.tmp
+              echo "release=$OCTOPUS_FEATURE_CHANNEL" >> var.tmp              
             fi
       - run:
+          name: version release number
+          command: |
+            vlnum=$ver-$BRANCH.${CIRCLE_BUILD_NUM}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - var.tmp          
+      - run:
           name: Debug output
-          command: cat var.tmp
+          command: cat var.tmp          
       
   # publish-image:
   #     executor: docker-publisher

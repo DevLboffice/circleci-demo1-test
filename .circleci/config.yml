@@ -148,11 +148,9 @@ jobs:
       name: octopus-cli/default
     parameters:
       api_key:
-        type: env_var_name
-        default: OCTOPUS_API_KEY
+        type: env_var_name        
       server:
-        type: env_var_name
-        default: OCTOPUS_SERVER_URL 
+        type: env_var_name        
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -169,7 +167,7 @@ jobs:
       - octopus-cli/install-tools
       - octopus-cli/build-information:
           api_key: << parameters.api_key >>
-          package_id: $IMAGE 
+          package_id: $IMG 
           server: << parameters.server >>
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
       - octopus-cli/create-release:

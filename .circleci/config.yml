@@ -1,7 +1,7 @@
 version: 2.1
 
-# orbs:
-#   octopus-cli: octopusdeploylabs/octopus-cli@0.0.3
+orbs:
+  octopus-cli: octopusdeploylabs/octopus-cli@0.0.3
 
 #IMAGE_NAME="your-dockerhub-username/your-image-name"  [your-dockerhub-username: This should be replaced with your Docker Hub username. ] [your-image-name : it represents the repository name within your Docker Hub account where the image will be pushed.] 
   
@@ -137,34 +137,34 @@ jobs:
         - run:
             name: Publish Docker Imgae to Docker Hub
             command: |
-              docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"
-              #IMAGE_TAG="0.0.${CIRCLE_BUILD_NUM}"
+              docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"              
               IMAGE_TAG=$(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
               echo $IMAGE_TAG
-              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
-              #docker push $IMAGE_NAME:latest
+              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG              
               docker push $IMAGE_NAME:$IMAGE_TAG
-  # build-octopus-info:
-  #   executor: 
-  #     name: octopus-cli/default
-  #   steps: 
-  #     - octopus-cli/install-tools
-  #     - octopus-cli/build-information:
-  #         api_key: $OCTOPUS_API_KEY
-  #         package_id: $IMAGE  #check if the package requiures exact image name
-  #         server: $OCTOPUS_SERVER_URL
-  #         version: ${bamboo.inject.ver}-${CIRCLE_BRANCH}.${CIRCLE_BUILD_NUM}
-  # build-octopus-release:
-  #   executor: 
-  #     name: octopus-cli/default
-  #   steps:
-  #     - octopus-cli/install-tools
-  #     - octopus-cli/create-release:
-  #         api_key: $OCTOPUS_API_KEY
-  #         project: $OCTOPUS_PROJECT
-  #         release_number: ${bamboo.inject.ver}-${CIRCLE_BRANCH}.${CIRCLE_BUILD_NUM}
-  #         channel: #chennle name to be released
-  #         server: $OCTOPUS_SERVER_URL          
+  
+  octopus-build-release:
+    executor: 
+      name: octopus-cli/default
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+            name: Verify files are in attach_workspace
+            command: ls -al /tmp/workspace
+      - octopus-cli/install-tools
+      - octopus-cli/build-information:
+          api_key: $OCTOPUS_API_KEY
+          package_id: $IMAGE 
+          server: $OCTOPUS_SERVER_URL
+          version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
+      - octopus-cli/create-release:
+          api_key: $OCTOPUS_API_KEY
+          project: $OCTOPUS_PROJECT
+          release_number: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
+          channel: $(cat /tmp/workspace/var.tmp | grep "^release=" | cut -d "=" -f2)
+          server: $OCTOPUS_SERVER_URL
+       
 workflows:
   test-deploy:
     jobs: 
@@ -175,12 +175,9 @@ workflows:
       - publish-image:
           requires:
             - build-image
-      # - build-octopus-info:
-      #     requires:
-      #       - publish-image
-      # - build-octopus-release:
-      #     requires:
-      #       - publish-image
+      - octopus-build-release:
+          requires:
+            - publish-image
       
           
         

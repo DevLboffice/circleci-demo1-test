@@ -135,7 +135,7 @@ jobs:
             name: Load archived docker image
             command: docker load -i /tmp/workspace/image.tar
         - run:
-            name: Publish Docker Imgae to Docker Hub
+            name: Publish Docker Imgae to DockerHub
             command: |
               docker login -u "$DOCKERHUB_USERNAME" -p "$docker_hub_token"              
               IMAGE_TAG=$(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)

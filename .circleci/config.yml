@@ -150,7 +150,11 @@ jobs:
       api_key:
         type: env_var_name        
       server:
-        type: env_var_name        
+        type: env_var_name  
+      package_id:
+        type: string 
+      project:
+        type: string           
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -167,12 +171,12 @@ jobs:
       - octopus-cli/install-tools
       - octopus-cli/build-information:
           api_key: << parameters.api_key >>
-          package_id: $IMG 
+          package_id: << parameters.package_id >>
           server: << parameters.server >>
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
       - octopus-cli/create-release:
           api_key: << parameters.api_key >>
-          project: $OCTOPUS_PROJECT
+          project: << parameters.project >>
           release_number: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
           channel: $(cat /tmp/workspace/var.tmp | grep "^release=" | cut -d "=" -f2)
           server: << parameters.server >>
@@ -192,6 +196,8 @@ workflows:
             - publish-image
           api_key: OCTOPUS_API_KEY
           server: OCTOPUS_SERVER_URL
+          package_id: IMG
+          project: OCTOPUS_PROJECT
       
           
         

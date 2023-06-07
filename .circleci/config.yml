@@ -149,10 +149,10 @@ jobs:
     parameters:
       api_key:
         type: env_var_name
-        default: $OCTOPUS_API_KEY
+        default: OCTOPUS_API_KEY
       server:
         type: env_var_name
-        default: $OCTOPUS_SERVER_URL 
+        default: OCTOPUS_SERVER_URL 
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -192,6 +192,8 @@ workflows:
       - octopus-build-release:
           requires:
             - publish-image
+          api_key: OCTOPUS_API_KEY
+          server: OCTOPUS_SERVER_URL
       
           
         

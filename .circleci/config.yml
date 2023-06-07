@@ -151,8 +151,8 @@ jobs:
         type: env_var_name        
       server:
         type: env_var_name  
-      package_id:
-        type: string 
+      # package_id:
+      #   type: string 
       project:
         type: string           
     steps:
@@ -170,7 +170,7 @@ jobs:
           server: << parameters.server >>
       - octopus-cli/build-information:
           api_key: << parameters.api_key >>
-          package_id: << parameters.package_id >>
+          package_id: devulb/circleci
           server: << parameters.server >>
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)      
        
@@ -188,8 +188,7 @@ workflows:
           requires:
             - publish-image
           api_key: OCTOPUS_API_KEY
-          server: OCTOPUS_SERVER_URL
-          package_id: devulb/circleci
+          server: OCTOPUS_SERVER_URL          
           project: Circle Test
       
           

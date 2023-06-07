@@ -150,20 +150,25 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-            name: Verify files are in attach_workspace
-            command: ls -al /tmp/workspace
+          name: Verify files are in attach_workspace
+          command: ls -al /tmp/workspace
+      - run:
+          name: get the env variables
+          command: |
+            echo "API_KEY=$OCTOPUS_API_KEY" >> $BASH_ENV
+            echo "SERVER_URL=$OCTOPUS_SERVER_URL" >> $BASH_ENV
       - octopus-cli/install-tools
       - octopus-cli/build-information:
-          api_key: ${OCTOPUS_API_KEY}
-          package_id: ${IMAGE} 
-          server: ${OCTOPUS_SERVER_URL}
+          api_key: $API_KEY
+          package_id: $IMAGE 
+          server: $SERVER_URL
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
       - octopus-cli/create-release:
-          api_key: ${OCTOPUS_API_KEY}
-          project: ${OCTOPUS_PROJECT}
+          api_key: $API_KEY
+          project: $OCTOPUS_PROJECT
           release_number: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
           channel: $(cat /tmp/workspace/var.tmp | grep "^release=" | cut -d "=" -f2)
-          server: ${OCTOPUS_SERVER_URL}
+          server: $SERVER_URL
        
 workflows:
   test-deploy:

@@ -157,7 +157,7 @@ jobs:
           command: |
             echo "API_KEY=$OCTOPUS_API_KEY" >> $BASH_ENV
             echo "SERVER_URL=$OCTOPUS_SERVER_URL" >> $BASH_ENV
-            echo "$SERVER_URL"
+            echo SERVER_URL
             echo API_KEY
       - octopus-cli/install-tools
       - octopus-cli/build-information:

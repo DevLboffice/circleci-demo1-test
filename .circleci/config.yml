@@ -196,8 +196,8 @@ workflows:
             - publish-image
           api_key: OCTOPUS_API_KEY
           server: OCTOPUS_SERVER_URL
-          package_id: IMG
-          project: OCTOPUS_PROJECT
+          package_id: $IMG
+          project: $OCTOPUS_PROJECT
       
           
         

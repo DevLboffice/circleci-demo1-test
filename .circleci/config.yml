@@ -160,26 +160,19 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Verify files are in attach_workspace
-          command: ls -al /tmp/workspace      
-      # - run:
-      #     name: get the env variables        
-      #     command: |
-      #       echo "API_KEY=$OCTOPUS_API_KEY" >> $BASH_ENV
-      #       echo "SERVER_URL=$OCTOPUS_SERVER_URL" >> $BASH_ENV
-      #       echo SERVER_URL
-      #       echo API_KEY
+          command: ls -al /tmp/workspace           
       - octopus-cli/install-tools
-      - octopus-cli/build-information:
-          api_key: << parameters.api_key >>
-          package_id: << parameters.package_id >>
-          server: << parameters.server >>
-          version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
       - octopus-cli/create-release:
           api_key: << parameters.api_key >>
           project: << parameters.project >>
           release_number: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
           channel: $(cat /tmp/workspace/var.tmp | grep "^release=" | cut -d "=" -f2)
           server: << parameters.server >>
+      - octopus-cli/build-information:
+          api_key: << parameters.api_key >>
+          package_id: << parameters.package_id >>
+          server: << parameters.server >>
+          version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)      
        
 workflows:
   test-deploy:
@@ -196,7 +189,7 @@ workflows:
             - publish-image
           api_key: OCTOPUS_API_KEY
           server: OCTOPUS_SERVER_URL
-          package_id: IMG
+          package_id: devulb/circleci
           project: Circle Test
       
           

@@ -170,7 +170,7 @@ jobs:
           server: << parameters.server >>
       - octopus-cli/build-information:
           api_key: << parameters.api_key >>
-          package_id: circleci
+          package_id: 'devulb\/circleci'
           server: << parameters.server >>
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)      
        

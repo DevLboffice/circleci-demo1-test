@@ -157,18 +157,20 @@ jobs:
           command: |
             echo "API_KEY=$OCTOPUS_API_KEY" >> $BASH_ENV
             echo "SERVER_URL=$OCTOPUS_SERVER_URL" >> $BASH_ENV
+            echo "$SERVER_URL"
+            echo API_KEY
       - octopus-cli/install-tools
       - octopus-cli/build-information:
           api_key: $API_KEY
           package_id: $IMAGE 
-          server: $SERVER_URL
+          server: "https://lftest.octopus.app"
           version: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
       - octopus-cli/create-release:
           api_key: $API_KEY
           project: $OCTOPUS_PROJECT
           release_number: $(cat /tmp/workspace/var.tmp | grep "^vrnum=" | cut -d "=" -f2)
           channel: $(cat /tmp/workspace/var.tmp | grep "^release=" | cut -d "=" -f2)
-          server: $SERVER_URL
+          server: "https://lftest.octopus.app"
        
 workflows:
   test-deploy:
